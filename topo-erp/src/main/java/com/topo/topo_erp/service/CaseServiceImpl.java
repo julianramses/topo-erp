@@ -7,6 +7,7 @@ import com.topo.topo_erp.model.Case.CaseState;
 import com.topo.topo_erp.model.PersonInCharge;
 import com.topo.topo_erp.repository.CaseRepository;
 import com.topo.topo_erp.repository.PersonInChargeRepository;
+import com.topo.topo_erp.utils.RutUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -18,9 +19,15 @@ public class CaseServiceImpl implements CaseService {
 
     private final CaseRepository caseRepository;
     private final PersonInChargeRepository personInChargeRepository;
+    private final RutUtils rutUtils;
 
     @Override
     public CaseResponse createCase(CaseRequest request) {
+        if (request.getClientRut() != null && !request.getClientRut().isEmpty()) {
+            if (!rutUtils.validarRut(request.getClientRut())) {
+                throw new IllegalArgumentException("RUT inválido: " + request.getClientRut());
+            }
+        }
         // Validate required fields
         if (request.getCaseName() == null || request.getCaseName().trim().isEmpty()) {
             throw new IllegalArgumentException("Case name is required");
@@ -49,6 +56,8 @@ public class CaseServiceImpl implements CaseService {
                 .startDate(request.getStartDate())
                 .endDate(request.getEndDate())
                 .budget(request.getBudget())
+                .clientRut(request.getClientRut() != null ?
+                        rutUtils.formatearRut(request.getClientRut()) : null)
                 .build();
 
         Case savedCase = caseRepository.save(newCase);
@@ -102,6 +111,14 @@ public class CaseServiceImpl implements CaseService {
     public CaseResponse updateCase(Long id, CaseRequest request) {
         Case caseEntity = caseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Case not found with id: " + id));
+
+        // Validar RUT si se está actualizando
+        if (request.getClientRut() != null) {
+            if (!rutUtils.validarRut(request.getClientRut())) {
+                throw new IllegalArgumentException("RUT inválido: " + request.getClientRut());
+            }
+            caseEntity.setClientRut(rutUtils.formatearRut(request.getClientRut()));
+        }
 
         // Update fields if provided
         if (request.getCaseName() != null) {
@@ -214,6 +231,7 @@ public class CaseServiceImpl implements CaseService {
                 .createdAt(caseEntity.getCreatedAt())
                 .updatedAt(caseEntity.getUpdatedAt())
                 .fileCount(caseEntity.getFiles() != null ? caseEntity.getFiles().size() : 0)
+                .clientRut(caseEntity.getClientRut())
                 .build();
     }
 
