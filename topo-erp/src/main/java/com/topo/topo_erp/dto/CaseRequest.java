@@ -1,6 +1,7 @@
 package com.topo.topo_erp.dto;
 
 import com.topo.topo_erp.model.Case.CaseState;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -19,4 +20,6 @@ public class CaseRequest {
     private LocalDate startDate;
     private LocalDate endDate;
     private BigDecimal budget;
+    @Pattern(regexp = "^\\d{7,8}-[\\dkK]$", message = "RUT debe tener formato: 12345678-9")
+    private String clientRut;
 }

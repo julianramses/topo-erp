@@ -21,6 +21,9 @@ public class Case {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "client_rut")
+    private String clientRut;
+
     @Column(nullable = false, unique = true)
     private String caseNumber; // Auto-generated format: CASE-2024-001
 

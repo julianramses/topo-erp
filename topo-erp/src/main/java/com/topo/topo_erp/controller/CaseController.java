@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/cases")
 @RequiredArgsConstructor
-public class CaseController {
+public class  CaseController {
 
     private final CaseService caseService;
 

@@ -26,4 +26,5 @@ public class CaseResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private int fileCount;
+    private String clientRut;
 }
